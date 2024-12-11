@@ -5,8 +5,8 @@ La idea del proyecto es explotar el uso de Python con Flask para el desarrollo d
 
 Requerimientos:
 
-Flask
-Pandas
+- Flask
+- Pandas
 
 Actualmente en desarrollo:
 - Pagina de Login.
