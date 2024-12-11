@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UTM y Tipo de Cambio</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #000000;
+        }
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+        }
+        label {
+            display: inline-block;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        select, input[type="text"], button {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        select:focus, input[type="text"]:focus, button:focus {
+            outline: none;
+        }
+        button {
+            background-color: #007BFF;
+            color: white;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.5s;
+        }
+        button:hover {
+            background-color: #159431;
+        }
+        p#mensaje {
+            font-weight: bold;
+        }
+    </style>
+    <script>
+        async function cargarDatos() {
+            const mes = document.getElementById("mes").value;
+            const año = document.getElementById("año").value;
+            const response = await fetch('/cargar', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ mes, año })
+            });
+            const data = await response.json();
+            document.getElementById("utm").value = data.utm || "";
+            document.getElementById("tipo_cambio").value = data.tipo_cambio || "";
+        }
+
+        async function guardarDatos() {
+            const mes = document.getElementById("mes").value;
+            const año = document.getElementById("año").value;
+            const utm = document.getElementById("utm").value;
+            const tipo_cambio = document.getElementById("tipo_cambio").value;
+            const response = await fetch('/guardar', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ mes, año, utm, tipo_cambio })
+            });
+            const result = await response.json();
+            const mensaje = document.getElementById("mensaje");
+            mensaje.textContent = result.message;
+            mensaje.style.color = result.success ? "green" : "red";
+        }
+    </script>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Mantención de UTM y Tipo de Cambio</h1>
+
+        <label for="mes">Selecciona el Mes</label>
+        <select id="mes" onchange="cargarDatos()">
+            {% for mes in meses %}
+                <option value="{{ mes }}" {% if loop.index0 == mes_actual %}selected{% endif %}>{{ mes }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="año">Selecciona el Año</label>
+        <select id="año" onchange="cargarDatos()">
+            {% for año in años %}
+                <option value="{{ año }}" {% if año|int == año_actual %}selected{% endif %}>{{ año }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="utm">Valor UTM</label>
+        <input type="text" id="utm" placeholder="Ingrese valor UTM">
+
+        <label for="tipo_cambio">Valor Tipo de Cambio</label>
+        <input type="text" id="tipo_cambio" placeholder="Ingrese tipo de cambio">
+
+        <button onclick="guardarDatos()">Guardar Valores</button>
+
+        <p id="mensaje"></p>
+    </div>
+
+</body>
+</html>
